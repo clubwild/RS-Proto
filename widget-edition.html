@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget Edition — Agorapulse</title>
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --ref-font-family: 'Averta Std', system-ui, -apple-system, sans-serif;
+      --ref-font-size-xs: 12px;
+      --ref-font-size-sm: 14px;
+      --ref-font-size-md: 16px;
+      --ref-font-size-lg: 18px;
+      --ref-font-size-xl: 20px;
+      --ref-font-size-xxl: 24px;
+      --ref-font-weight-regular: 400;
+      --ref-font-weight-bold: 700;
+      --ref-font-weight-extra-bold: 800;
+      --ref-font-line-height-xs: 16px;
+      --ref-font-line-height-sm: 18px;
+      --ref-font-line-height-md: 20px;
+      --ref-font-line-height-lg: 24px;
+      --ref-font-line-height-xl: 32px;
+
+      --ref-spacing-xxxs: 4px;
+      --ref-spacing-xxs: 8px;
+      --ref-spacing-xs: 12px;
+      --ref-spacing-sm: 16px;
+      --ref-spacing-md: 24px;
+      --ref-spacing-lg: 32px;
+      --ref-spacing-xl: 40px;
+
+      --ref-radius-sm: 4px;
+      --ref-radius-md: 6px;
+      --ref-radius-lg: 8px;
+      --ref-radius-xl: 12px;
+      --ref-radius-full: 9999px;
+
+      --ref-color-grey-150: #212E44;
+      --ref-color-grey-100: #344563;
+      --ref-color-grey-80:  #5D6A82;
+      --ref-color-grey-60:  #858FA1;
+      --ref-color-grey-40:  #AEB5C1;
+      --ref-color-grey-20:  #D6DAE0;
+      --ref-color-grey-10:  #EAECEF;
+      --ref-color-grey-05:  #F5F5F7;
+      --ref-color-grey-bg:  #F9F9FA;
+
+      --ref-color-orange-150: #C83E07;
+      --ref-color-orange-100: #FF6726;
+      --ref-color-orange-20:  #FFE1D4;
+      --ref-color-orange-10:  #FFEFE9;
+
+      --ref-color-electric-blue-150: #1D4ED8;
+      --ref-color-electric-blue-100: #3B82F6;
+      --ref-color-electric-blue-20:  #DBEAFE;
+      --ref-color-electric-blue-10:  #EFF6FF;
+
+      --ref-color-green-100:  #22A05A;
+      --ref-color-red-100:    #EF4444;
+      --ref-color-purple-100: #7C3AED;
+      --ref-color-yellow-100: #F59E0B;
+      --ref-color-menthol-100: #06B6D4;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--ref-font-family);
+      font-size: var(--ref-font-size-sm);
+      color: var(--ref-color-grey-100);
+      background: var(--ref-color-grey-bg);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Top Header Bar ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--ref-spacing-md);
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid var(--ref-color-grey-20);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxs);
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-electric-blue-100);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .header-left:hover { color: var(--ref-color-electric-blue-150); }
+    .header-left svg { width: 16px; height: 16px; }
+
+    .header-title {
+      font-size: var(--ref-font-size-md);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-150);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxs);
+    }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxxs);
+      padding: 0 var(--ref-spacing-sm);
+      height: 36px;
+      border-radius: var(--ref-radius-lg);
+      font-family: var(--ref-font-family);
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      border: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ref-color-grey-80);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:hover {
+      background: var(--ref-color-grey-10);
+      color: var(--ref-color-grey-100);
+    }
+    .btn-primary {
+      background: var(--ref-color-orange-100);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--ref-color-orange-150); }
+
+    /* ─── Layout ─── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── Left Sidebar ─── */
+    .sidebar {
+      width: 300px;
+      min-width: 300px;
+      background: #fff;
+      border-right: 1px solid var(--ref-color-grey-20);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Section ─── */
+    .section {
+      border-bottom: 1px solid var(--ref-color-grey-10);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--ref-spacing-sm) var(--ref-spacing-sm);
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-header:hover { background: var(--ref-color-grey-bg); }
+
+    .section-title {
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-150);
+    }
+
+    .chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--ref-color-grey-60);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .chevron.collapsed { transform: rotate(-90deg); }
+
+    .section-body {
+      padding: 0 var(--ref-spacing-sm) var(--ref-spacing-sm);
+      display: flex;
+      flex-direction: column;
+      gap: var(--ref-spacing-xs);
+    }
+    .section-body.hidden { display: none; }
+
+    /* ─── Labels ─── */
+    .field-label {
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-100);
+      margin-bottom: var(--ref-spacing-xxxs);
+    }
+    .field-hint {
+      font-size: var(--ref-font-size-xs);
+      color: var(--ref-color-grey-60);
+      line-height: var(--ref-font-line-height-xs);
+      margin-bottom: var(--ref-spacing-xxs);
+    }
+
+    /* ─── Profile Chips ─── */
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ref-spacing-xxxs);
+      align-items: center;
+      padding: var(--ref-spacing-xxs) var(--ref-spacing-xs);
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-lg);
+      background: #fff;
+      cursor: pointer;
+    }
+    .chips-row:hover { border-color: var(--ref-color-grey-40); }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxxs);
+      padding: 2px var(--ref-spacing-xxs) 2px var(--ref-spacing-xxxs);
+      background: var(--ref-color-grey-10);
+      border-radius: var(--ref-radius-full);
+      font-size: var(--ref-font-size-xs);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-100);
+    }
+    .chip-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: var(--ref-radius-full);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chip-remove {
+      cursor: pointer;
+      color: var(--ref-color-grey-60);
+      font-size: 11px;
+      line-height: 1;
+    }
+    .chip-remove:hover { color: var(--ref-color-red-100); }
+    .chips-arrow {
+      margin-left: auto;
+      color: var(--ref-color-grey-60);
+      width: 16px; height: 16px;
+    }
+
+    /* ─── Radio Cards ─── */
+    .radio-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ref-spacing-xxs);
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ref-spacing-xs);
+      padding: var(--ref-spacing-xs) var(--ref-spacing-sm);
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-lg);
+      cursor: pointer;
+      background: #fff;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .radio-card:hover { border-color: var(--ref-color-grey-40); }
+    .radio-card.selected {
+      border-color: var(--ref-color-electric-blue-100);
+      background: var(--ref-color-electric-blue-10);
+    }
+
+    .radio-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--ref-color-grey-40);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+    }
+    .radio-card.selected .radio-circle {
+      border-color: var(--ref-color-electric-blue-100);
+    }
+    .radio-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.15s;
+    }
+    .radio-card.selected .radio-circle::after {
+      background: var(--ref-color-electric-blue-100);
+    }
+
+    .radio-card-content {}
+    .radio-card-title {
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-150);
+      line-height: var(--ref-font-line-height-sm);
+      margin-bottom: 2px;
+    }
+    .radio-card-desc {
+      font-size: var(--ref-font-size-xs);
+      color: var(--ref-color-grey-60);
+      line-height: var(--ref-font-line-height-xs);
+    }
+
+    /* ─── Size Picker ─── */
+    .size-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ref-spacing-xxs);
+      align-items: center;
+    }
+
+    .size-option {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxxs);
+      cursor: pointer;
+    }
+    .size-option input[type="radio"] { display: none; }
+
+    .size-blocks {
+      display: flex;
+      gap: 2px;
+    }
+    .size-block {
+      height: 18px;
+      width: 14px;
+      border-radius: 2px;
+      background: var(--ref-color-grey-20);
+      transition: background 0.15s;
+    }
+    .size-option input:checked ~ .size-blocks .size-block.active {
+      background: var(--ref-color-electric-blue-100);
+    }
+
+    /* ─── Display Cards (small) ─── */
+    .display-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ref-spacing-xxs);
+    }
+
+    .display-card {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-xs);
+      padding: var(--ref-spacing-xs) var(--ref-spacing-sm);
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-lg);
+      cursor: pointer;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .display-card:hover { border-color: var(--ref-color-grey-40); }
+    .display-card.selected {
+      border-color: var(--ref-color-electric-blue-100);
+      background: var(--ref-color-electric-blue-10);
+    }
+    .display-card-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--ref-color-grey-60);
+      flex-shrink: 0;
+    }
+    .display-card.selected .display-card-icon { color: var(--ref-color-electric-blue-100); }
+    .display-card-text {}
+    .display-card-name {
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-150);
+    }
+    .display-card-sub {
+      font-size: var(--ref-font-size-xs);
+      color: var(--ref-color-grey-60);
+    }
+
+    /* ─── Select / Dropdown ─── */
+    .ap-select {
+      width: 100%;
+      padding: 0 var(--ref-spacing-xs);
+      height: 36px;
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-lg);
+      font-family: var(--ref-font-family);
+      font-size: var(--ref-font-size-sm);
+      color: var(--ref-color-grey-100);
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23858FA1'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E") no-repeat right 10px center / 16px;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .ap-select:hover { border-color: var(--ref-color-grey-40); }
+    .ap-select:focus {
+      outline: none;
+      border-color: var(--ref-color-electric-blue-100);
+      box-shadow: 0 0 0 3px var(--ref-color-electric-blue-20);
+    }
+
+    /* fake select (non-native) */
+    .fake-select {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--ref-spacing-xs);
+      height: 36px;
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-lg);
+      font-size: var(--ref-font-size-sm);
+      color: var(--ref-color-grey-60);
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .fake-select:hover { border-color: var(--ref-color-grey-40); }
+    .fake-select svg { width: 16px; height: 16px; color: var(--ref-color-grey-60); }
+
+    /* ─── Inline Radio ─── */
+    .inline-radios {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-sm);
+    }
+    .inline-radio {
+      display: flex;
+      align-items: center;
+      gap: var(--ref-spacing-xxxs);
+      cursor: pointer;
+      font-size: var(--ref-font-size-sm);
+      color: var(--ref-color-grey-100);
+    }
+    .inline-radio input[type="radio"] { display: none; }
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--ref-color-grey-40);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .dot::after {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.15s;
+    }
+    .inline-radio input:checked ~ .dot {
+      border-color: var(--ref-color-electric-blue-100);
+    }
+    .inline-radio input:checked ~ .dot::after {
+      background: var(--ref-color-electric-blue-100);
+    }
+
+    /* ─── Preview Panel ─── */
+    .preview-panel {
+      flex: 1;
+      padding: var(--ref-spacing-md);
+      background: var(--ref-color-grey-bg);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--ref-spacing-sm);
+    }
+
+    .preview-title {
+      font-size: var(--ref-font-size-sm);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-80);
+    }
+
+    .preview-card {
+      background: #fff;
+      border: 1px solid var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-xl);
+      padding: var(--ref-spacing-md);
+    }
+
+    .preview-card-title {
+      font-size: var(--ref-font-size-md);
+      font-weight: var(--ref-font-weight-bold);
+      color: var(--ref-color-grey-150);
+      margin-bottom: var(--ref-spacing-md);
+    }
+
+    .chart-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ref-spacing-sm) 0;
+    }
+
+    #donut-chart {
+      overflow: visible;
+    }
+
+    /* ─── Scrollbar ─── */
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--ref-color-grey-20);
+      border-radius: var(--ref-radius-full);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ─── -->
+  <header class="header">
+    <a class="header-left" href="#">
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/>
+      </svg>
+      Back to report
+    </a>
+    <span class="header-title">Widget edition</span>
+    <div class="header-actions">
+      <button class="btn btn-ghost">Cancel</button>
+      <button class="btn btn-primary">Save widget</button>
+    </div>
+  </header>
+
+  <!-- ─── Layout ─── -->
+  <div class="layout">
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar">
+
+      <!-- 1. Profiles selection -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Profiles selection</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Social profiles</div>
+          <div class="field-hint">You can customize the selection to highlight specific profiles or networks.</div>
+          <div class="chips-row">
+            <span class="chip">
+              <span class="chip-icon" style="background:#1877F2;">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </span>
+              NTS
+              <span class="chip-remove" onclick="removeChip(this)">×</span>
+            </span>
+            <span class="chip">
+              <span class="chip-icon" style="background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </span>
+              NTS
+              <span class="chip-remove" onclick="removeChip(this)">×</span>
+            </span>
+            <span class="chip">
+              <span class="chip-icon" style="background:#0A66C2;">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </span>
+              NTS
+              <span class="chip-remove" onclick="removeChip(this)">×</span>
+            </span>
+            <svg class="chips-arrow" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Data aggregation -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Data aggregation</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="radio-cards" id="agg-group">
+            <div class="radio-card selected" onclick="selectRadioCard(this, 'agg-group')">
+              <div class="radio-circle"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Grouped by profile</div>
+                <div class="radio-card-desc">Data will be shown separately for each selected profile, allowing you to compare individual profile performance.</div>
+              </div>
+            </div>
+            <div class="radio-card" onclick="selectRadioCard(this, 'agg-group')">
+              <div class="radio-circle"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Grouped by network</div>
+                <div class="radio-card-desc">Data will be grouped by social network (e.g., all Facebook data, all LinkedIn data).</div>
+              </div>
+            </div>
+            <div class="radio-card" onclick="selectRadioCard(this, 'agg-group')">
+              <div class="radio-circle"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Grouped by label</div>
+                <div class="radio-card-desc">Data will be grouped by label, allowing you to compare labels performance.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Widget style -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Widget style</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Widget size</div>
+          <div class="size-picker" id="size-group">
+            <!-- 1-col -->
+            <label class="size-option" onclick="selectSize(this, 'size-group')">
+              <input type="radio" name="widget-size" value="1" />
+              <div class="size-blocks">
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block"></div>
+                <div class="size-block"></div>
+              </div>
+            </label>
+            <!-- 2-col -->
+            <label class="size-option" onclick="selectSize(this, 'size-group')">
+              <input type="radio" name="widget-size" value="2" />
+              <div class="size-blocks">
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block"></div>
+              </div>
+            </label>
+            <!-- 3-col -->
+            <label class="size-option" onclick="selectSize(this, 'size-group')">
+              <input type="radio" name="widget-size" value="3" />
+              <div class="size-blocks">
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+              </div>
+            </label>
+            <!-- 4-col (selected) -->
+            <label class="size-option selected-size" onclick="selectSize(this, 'size-group')">
+              <input type="radio" name="widget-size" value="4" checked />
+              <div class="size-blocks">
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+                <div class="size-block active" style="background:var(--ref-color-electric-blue-100)"></div>
+              </div>
+            </label>
+          </div>
+
+          <div style="margin-top: var(--ref-spacing-xxs);">
+            <div class="field-label">Widget display</div>
+            <div class="display-cards" id="display-group">
+              <div class="display-card selected" onclick="selectDisplayCard(this, 'display-group')">
+                <div class="radio-circle" style="margin-top:0; flex-shrink:0;"></div>
+                <!-- Pie chart icon -->
+                <svg class="display-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" />
+                </svg>
+                <div class="display-card-text">
+                  <div class="display-card-name">Distribution</div>
+                  <div class="display-card-sub">Show proportional breakdown</div>
+                </div>
+              </div>
+              <div class="display-card" onclick="selectDisplayCard(this, 'display-group')">
+                <div class="radio-circle" style="margin-top:0; flex-shrink:0;"></div>
+                <!-- Table icon -->
+                <svg class="display-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
+                </svg>
+                <div class="display-card-text">
+                  <div class="display-card-name">Table</div>
+                  <div class="display-card-sub">Display data in rows and columns</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Metrics & details -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Metrics &amp; details</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Metric breakdown</div>
+          <div class="field-hint">Breakdown only available for Facebook, Instagram, LinkedIn.</div>
+          <select class="ap-select">
+            <option>Total only</option>
+            <option>Organic</option>
+            <option>Paid</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 5. Label filtering -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Label filtering</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Label selection</div>
+          <div class="field-hint">You can select up to 10 labels</div>
+          <div class="fake-select">
+            <span>Select a label</span>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Content type filtering -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Content type filtering</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Content type</div>
+          <div class="fake-select">
+            <span>Select</span>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Graph settings -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span class="section-title">Graph settings</span>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="section-body">
+          <div class="field-label">Metric format</div>
+          <div class="inline-radios">
+            <label class="inline-radio">
+              <input type="radio" name="metric-format" value="pct" checked />
+              <span class="dot"></span>
+              Percentage
+            </label>
+            <label class="inline-radio">
+              <input type="radio" name="metric-format" value="count" />
+              <span class="dot"></span>
+              Count
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ─── Preview Panel ─── -->
+    <main class="preview-panel">
+      <div class="preview-title">Preview</div>
+      <div class="preview-card">
+        <div class="preview-card-title">Posts reach</div>
+        <div class="chart-wrapper">
+          <svg id="donut-chart" width="460" height="320" viewBox="0 0 460 320"></svg>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    /* ─── Collapsible sections ─── */
+    function toggleSection(header) {
+      const body = header.nextElementSibling;
+      const chevron = header.querySelector('.chevron');
+      const collapsed = body.classList.toggle('hidden');
+      chevron.classList.toggle('collapsed', collapsed);
+    }
+
+    /* ─── Radio cards (aggregation & display) ─── */
+    function selectRadioCard(card, groupId) {
+      const group = document.getElementById(groupId);
+      group.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
+
+    function selectDisplayCard(card, groupId) {
+      const group = document.getElementById(groupId);
+      group.querySelectorAll('.display-card').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.radio-circle')?.classList.remove('selected');
+      });
+      card.classList.add('selected');
+    }
+
+    /* ─── Size picker ─── */
+    function selectSize(label, groupId) {
+      const group = document.getElementById(groupId);
+      group.querySelectorAll('.size-option').forEach(l => l.classList.remove('selected-size'));
+      label.classList.add('selected-size');
+    }
+
+    /* ─── Remove chip ─── */
+    function removeChip(el) {
+      el.closest('.chip').remove();
+    }
+
+    /* ─── Donut Chart ─── */
+    const segments = [
+      { label: 'Profile 1',  pct:  5, color: '#60A5FA' },  // light blue
+      { label: 'Profile 2',  pct: 10, color: '#D97706' },  // orange-brown
+      { label: 'Profile 3',  pct: 35, color: '#16A34A' },  // green
+      { label: 'Profile 4',  pct: 10, color: '#EF4444' },  // red
+      { label: 'Profile 5',  pct: 15, color: '#4C1D95' },  // deep purple
+      { label: 'Profile 6',  pct: 25, color: '#2563EB' },  // blue
+    ];
+
+    function polarToCartesian(cx, cy, r, deg) {
+      const rad = (deg - 90) * Math.PI / 180;
+      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+    }
+
+    function arcPath(cx, cy, outerR, innerR, startDeg, endDeg) {
+      const s = polarToCartesian(cx, cy, outerR, startDeg);
+      const e = polarToCartesian(cx, cy, outerR, endDeg);
+      const si = polarToCartesian(cx, cy, innerR, endDeg);
+      const ei = polarToCartesian(cx, cy, innerR, startDeg);
+      const large = (endDeg - startDeg) > 180 ? 1 : 0;
+      return [
+        `M ${s.x} ${s.y}`,
+        `A ${outerR} ${outerR} 0 ${large} 1 ${e.x} ${e.y}`,
+        `L ${si.x} ${si.y}`,
+        `A ${innerR} ${innerR} 0 ${large} 0 ${ei.x} ${ei.y}`,
+        'Z'
+      ].join(' ');
+    }
+
+    function buildChart() {
+      const svg = document.getElementById('donut-chart');
+      const cx = 230, cy = 160, outerR = 120, innerR = 68;
+      const gap = 1.5;
+      let current = 0;
+
+      segments.forEach((seg, i) => {
+        const startDeg = current + gap / 2;
+        const endDeg = current + (seg.pct / 100) * 360 - gap / 2;
+        const midDeg = (startDeg + endDeg) / 2;
+
+        // Slice
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', arcPath(cx, cy, outerR, innerR, startDeg, endDeg));
+        path.setAttribute('fill', seg.color);
+        path.style.cursor = 'pointer';
+        path.style.transition = 'opacity 0.15s';
+        path.addEventListener('mouseenter', () => path.setAttribute('opacity', '0.82'));
+        path.addEventListener('mouseleave', () => path.setAttribute('opacity', '1'));
+        svg.appendChild(path);
+
+        // Label line + text
+        const lineStartR = outerR + 8;
+        const lineEndR   = outerR + 30;
+        const textR      = outerR + 38;
+
+        const ls = polarToCartesian(cx, cy, lineStartR, midDeg);
+        const le = polarToCartesian(cx, cy, lineEndR, midDeg);
+        const tp = polarToCartesian(cx, cy, textR, midDeg);
+
+        // Elbow line
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', ls.x); line.setAttribute('y1', ls.y);
+        line.setAttribute('x2', le.x); line.setAttribute('y2', le.y);
+        line.setAttribute('stroke', '#AEB5C1');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+
+        // Horizontal tick
+        const tickLen = tp.x > cx ? 14 : -14;
+        const hline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hline.setAttribute('x1', le.x); hline.setAttribute('y1', le.y);
+        hline.setAttribute('x2', le.x + tickLen); hline.setAttribute('y2', le.y);
+        hline.setAttribute('stroke', '#AEB5C1');
+        hline.setAttribute('stroke-width', '1');
+        svg.appendChild(hline);
+
+        // Label text
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', le.x + tickLen + (tp.x > cx ? 4 : -4));
+        text.setAttribute('y', le.y + 4);
+        text.setAttribute('text-anchor', tp.x > cx ? 'start' : 'end');
+        text.setAttribute('font-family', 'Averta Std, system-ui, sans-serif');
+        text.setAttribute('font-size', '11');
+        text.setAttribute('fill', '#344563');
+        text.textContent = `${seg.label}: ${seg.pct}%`;
+        svg.appendChild(text);
+
+        current += (seg.pct / 100) * 360;
+      });
+    }
+
+    buildChart();
+
+    /* ─── Inline radio dots (CSS-driven via :checked, but sync visuals) ─── */
+    document.querySelectorAll('.inline-radio input').forEach(input => {
+      input.addEventListener('change', () => {
+        document.querySelectorAll('.inline-radio .dot').forEach(d => {
+          const inpt = d.previousElementSibling;
+          d.style.borderColor = inpt && inpt.checked ? 'var(--ref-color-electric-blue-100)' : '';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

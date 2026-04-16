@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(open /Users/chloe.cardona/Documents/Claude/RS-Proto/widget-edition.html)"
+    ]
+  }
+}
